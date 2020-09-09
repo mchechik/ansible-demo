@@ -1,0 +1,17 @@
+---
+
+# Main runner playbook
+
+- hosts: all
+  tasks:
+  - name: Print start
+    debug:
+      - msg: 'Executing {{ aws_access_key }}'
+  
+  - name: exit
+    fail: msg='exiting...'
+
+  - name: Start webserver deployment
+    include_role:
+      name: web
+      tasks_from: main

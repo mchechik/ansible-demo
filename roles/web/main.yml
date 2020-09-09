@@ -1,0 +1,6 @@
+---
+- name: Print web servers
+  debug:
+    msg: "hello"
+  loop_control:
+    loop_var: hosts
