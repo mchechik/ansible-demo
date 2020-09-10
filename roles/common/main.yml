@@ -1,8 +1,0 @@
----
-- ec2:
-    key_name: kali
-    instance_type: t2.micro
-    image: ami-06b263d6ceff0b3dd
-    wait: yes
-    group: webserver
-    assign_public_ip: no

@@ -1,0 +1,19 @@
+---
+- ec2:
+    key_name: kali
+    region: us-east-1
+    instance_type: t2.micro
+    image: ami-06b263d6ceff0b3dd
+    vpc_subnet_id: subnet-b7b7ccef
+    group: ssh-ansible-demo
+    wait: yes
+    assign_public_ip: yes
+    instance_profile_name: dev-role
+    instance_tags:
+      Name: "Webserver_{{ item }}"
+  loop: "{{ ec2_names }}"
+  when: ec2_names is defined
+
+- fail:
+    msg: "Please define ec2_names before running playbooks"
+  when: ec2_names is not defined

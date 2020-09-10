@@ -1,0 +1,12 @@
+---
+
+# Software playbook
+
+- hosts: tag_Name_Webserver*
+  tasks:
+  - debug:
+      msg: "Start web"
+  - include_role:
+      name: web
+  - debug:
+      msg: "End web"
