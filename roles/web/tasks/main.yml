@@ -1,0 +1,46 @@
+---
+- name: Print current IP
+  debug:
+    msg: "I'm on {{ inventory_hostname }}"
+
+- name: Install pip
+  apt:
+    name: python3-pip
+    state: latest
+    update_cache: yes
+  become: true 
+
+- name: Install python dep's
+  pip:
+    name: 
+      - boto3
+      - boto
+
+- name: Set up server directory
+  file:
+    path: /home/ubuntu/server
+    state: directory
+    mode: '0755'
+
+- name: Set up index.html
+  template:
+    src: index.html.j2
+    dest: /home/ubuntu/server/index.html
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Start HTTP Server
+  shell: cd /home/ubuntu/server; nohup /usr/bin/python3 -m http.server 80 </dev/null >/dev/null 2>&1 &
+  become: true
+
+- name: Validate server started
+  uri:
+    url: http://localhost:80
+    return_content: yes
+  register: web_output
+  failed_when: "'Hello' not in web_output.content"
+
+- name: Success, print web_output
+  debug:
+    msg: "{{ web_output }}" 

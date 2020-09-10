@@ -1,0 +1,12 @@
+---
+
+# Hardware playbook
+
+- hosts: localhost
+  tasks:
+  - debug:
+      msg: "Start common"
+  - include_role:
+      name: common
+  - debug:
+      msg: "End common"
