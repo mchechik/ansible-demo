@@ -8,11 +8,11 @@
     name: python3-pip
     state: latest
     update_cache: yes
-  become: true 
+  become: true
 
 - name: Install python dep's
   pip:
-    name: 
+    name:
       - boto3
       - boto
 
@@ -29,6 +29,8 @@
     owner: ubuntu
     group: ubuntu
     mode: '0755'
+  tags:
+    - always
 
 - name: Start HTTP Server
   shell: cd /home/ubuntu/server; nohup /usr/bin/python3 -m http.server 80 </dev/null >/dev/null 2>&1 &
@@ -40,7 +42,11 @@
     return_content: yes
   register: web_output
   failed_when: "'Hello' not in web_output.content"
+  tags:
+    - always
 
 - name: Success, print web_output
   debug:
-    msg: "{{ web_output }}" 
+    msg: "{{ web_output }}"
+  tags:
+    - always

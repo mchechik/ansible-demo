@@ -2,6 +2,8 @@
 
 # Software playbook
 
+# Being initial deployment logic
+
 - hosts: tag_Name_Webserver*
   tasks:
   - debug:
@@ -10,3 +12,62 @@
       name: web
   - debug:
       msg: "End web"
+
+- hosts: tag_Name_Webserver_green
+  tasks:
+  - route53:
+      state: present
+      overwrite: yes
+      zone: ansible-demo
+      private_zone: True
+      record: green.ansible-demo
+      type: A
+      ttl: 10
+      value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+      wait: no
+
+# End initial deployment logic
+
+# Begin blue-green logic
+
+- hosts: tag_Name_Webserver_blue
+  tasks:
+  - include_role:
+      name: web
+    tags:
+      - bg
+  - route53:
+      state: present
+      overwrite: yes
+      zone: ansible-demo
+      private_zone: True
+      record: green.ansible-demo
+      type: A
+      ttl: 10
+      value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+      wait: no
+    tags:
+      - bg
+  - name: Rename blue to green
+    ec2_tag:
+      resource: "{{ hostvars[inventory_hostname]['ec2_id'] }}"
+      region: us-east-1
+      state: present
+      tags:
+        Name: Webserver_green
+    tags:
+      - bg
+
+- hosts: tag_Name_Webserver_green
+  tasks:
+    - name: Rename old green to blue
+      ec2_tag:
+        resource: "{{ hostvars[inventory_hostname]['ec2_id'] }}"
+        region: us-east-1
+        state: present
+        tags:
+          Name: Webserver_blue
+      tags:
+        - bg
+
+# End blue-green logic
